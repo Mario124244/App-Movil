@@ -8,63 +8,70 @@ import { Ionicons } from '@expo/vector-icons';
 // Importa tus pantallas principales
 import HomeScreen from './screens/Principal/inicio';
 import Tema1Screen from './screens/Principal/tema1';
-import Tema2Screen from './screens/Principal/tema2';
+import Tema4Screen from './screens/Principal/tema4';
+import BuscarScreen from './screens/Principal/Buscar';
 
-// Crear navegadores
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-//  Stack de Pantallas de Aprendizaje
+// Stack solo para Home + Temas
 function LearningStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Tema1" component={Tema1Screen} />
-      <Stack.Screen name="Tema2" component={Tema2Screen} /> 
-      <Stack.Screen name="Tema3" component={Tema1Screen} />
-      <Stack.Screen name="Tema4" component={Tema1Screen} />
+      <Stack.Screen name="Tema4" component={Tema4Screen} />
     </Stack.Navigator>
   );
 }
 
-//  Navegador de Pestañas Inferior
-function MainTabs() {
-    return (
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          headerShown: false,
-          tabBarStyle: {
-            backgroundColor: '#000', // Fondo del menú
-            paddingVertical: 10,
-          },
-          tabBarActiveTintColor: '#fff',
-          tabBarInactiveTintColor: '#aaa',
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
-  
-            if (route.name === 'Inicio') {
-              iconName = focused ? 'home' : 'home-outline';
-            } else if (route.name === 'Buscar') {
-              iconName = focused ? 'search' : 'search-outline';
-            
-            } else if (route.name === 'Ajustes') {
-              iconName = focused ? 'settings' : 'settings-outline';
-            }
-  
-            // Retorna el icono correspondiente
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-        })}
-      >
-        <Tab.Screen name="Inicio" component={LearningStack} />
-        <Tab.Screen name="Buscar" component={Tema1Screen} />
-        <Tab.Screen name="Ajustes" component={Tema1Screen} />
-      </Tab.Navigator>
-    );
-  }
-  
+// Stack para Buscar + Temas (comparten las mismas pantallas)
+function BuscarStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Buscar" component={BuscarScreen} />
+      <Stack.Screen name="Tema1" component={Tema1Screen} />
+      
+      <Stack.Screen name="Tema4" component={Tema4Screen} />
+    </Stack.Navigator>
+  );
+}
 
-//  App Principal con Menú Inferior
+// Tab principal
+function MainTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: '#000',
+          paddingVertical: 10,
+        },
+        tabBarActiveTintColor: '#fff',
+        tabBarInactiveTintColor: '#aaa',
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+
+          if (route.name === 'Inicio') {
+            iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Buscar') {
+            iconName = focused ? 'search' : 'search-outline';
+          } else if (route.name === 'Ajustes') {
+            iconName = focused ? 'settings' : 'settings-outline';
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+      })}
+    >
+      <Tab.Screen name="Inicio" component={LearningStack} />
+      <Tab.Screen name="Buscar" component={BuscarStack} />
+      <Tab.Screen name="Ajustes" component={Tema4Screen} />
+    </Tab.Navigator>
+  );
+}
+
+// App Principal
 function MainApp() {
   return (
     <NavigationContainer>
@@ -73,5 +80,4 @@ function MainApp() {
   );
 }
 
-// Registra la app principal
 registerRootComponent(MainApp);

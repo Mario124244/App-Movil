@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 8,
     elevation: 4,
-  }, //  Coma corregida aquí
+  }, 
   buttonText: {
     fontSize: 16,
     color: '#fff',

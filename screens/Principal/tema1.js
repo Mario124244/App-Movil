@@ -1,174 +1,247 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ImageBackground,
   ScrollView,
-  Animated,
   TouchableOpacity,
   Image,
+  FlatList,
+  LayoutAnimation,
+  Platform,
+  UIManager
 } from 'react-native';
 
-const Tema1Screen = () => {
-  const [expanded, setExpanded] = useState(false); // Estado para controlar si está expandido
 
-  //  Función para alternar entre expandido y colapsado
+
+// Datos de las distribuciones de Linux
+const distributions = [
+  {
+    id: 1,
+    name: 'Ubuntu',
+    image: require('../../assets/t7.png'),
+    description: 'Ubuntu es una distribución de Linux basada en Debian, desarrollada y mantenida por Canonical Ltd. Popular por su facilidad de uso y gran comunidad.'
+  },
+  {
+    id: 2,
+    name: 'CentOS',
+    image: require('../../assets/t8.png'),
+    description: 'Estable para entornos empresariales y servidores.'
+  },
+  {
+    id: 3,
+    name: 'Kali Linux',
+    image: require('../../assets/t9.png'),
+    description: 'Enfocada en pentesting y análisis de seguridad.'
+  },
+  {
+    id: 4,
+    name: 'Raspbian',
+    image: require('../../assets/t10.png'),
+    description: 'Sistema para dispositivos Raspberry Pi.'
+  }
+];
+
+
+const COLORS = {
+  primary: '#1E1E1E',
+  secondary: '#2E2E2E',
+  accent: '#FFD700',
+  text: '#FFFFFF',
+  darkText: '#333333',
+};
+
+
+const DistributionCard = ({ name, image, description, resaltarPalabra }) => (
+  <TouchableOpacity style={styles.galleryCard}>
+    <Image source={image} style={styles.galleryImage} accessibilityLabel={`Logo de ${name}`} />
+    <Text style={styles.galleryTitle}>{resaltarPalabra(name)}</Text>
+    <ScrollView style={styles.descriptionScroll} nestedScrollEnabled>
+      <Text style={styles.galleryDescription}>
+        {resaltarPalabra(description)}
+      </Text>
+    </ScrollView>
+  </TouchableOpacity>
+);
+
+const Tema1Screen = ({ route }) => {
+  const [expanded, setExpanded] = useState(false);
+  const scrollViewRef = useRef(null);
+  const palabraBuscada = route?.params?.palabra?.toLowerCase() || '';
+
+  const refs = {
+    sistema: useRef(null),
+    kernel: useRef(null),
+    procesos: useRef(null),
+    distribuciones: useRef(null),
+  };
+
+  // Efecto para scroll a palabra buscada
+  useEffect(() => {
+    if (palabraBuscada && refs[palabraBuscada]?.current) {
+      const timer = setTimeout(() => {
+        refs[palabraBuscada].current?.measureLayout(
+          scrollViewRef.current,
+          (x, y) => {
+            scrollViewRef.current?.scrollTo({ y: y - 50, animated: true });
+          },
+          () => console.warn('No se pudo ubicar la palabra buscada')
+        );
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [palabraBuscada]);
+
+  // Función para expandir/contraer con animación
   const toggleExpand = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpanded(!expanded);
   };
 
+  // Función memoizada para resaltar texto
+  const resaltarPalabra = useCallback((texto) => {
+    if (!palabraBuscada) return texto;
+
+    const regex = new RegExp(`(${palabraBuscada})`, 'gi');
+    const partes = texto.split(regex);
+
+    return partes.map((parte, index) =>
+      parte.toLowerCase() === palabraBuscada ? (
+        <Text key={index} style={styles.highlightedText}>
+          {parte}
+        </Text>
+      ) : (
+        parte
+      )
+    );
+  }, [palabraBuscada]);
+
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      {/*  Encabezado Deslizable */}
+    <ScrollView 
+      ref={scrollViewRef} 
+      contentContainerStyle={styles.scrollContainer}
+      accessibilityLabel="Pantalla de información sobre Linux"
+    >
+      {/* Encabezado */}
       <View style={styles.headerContainer}>
         <ImageBackground
-          source={require('../../assets/t6.png')} // Verifica ruta correcta
+          source={require('../../assets/t6.png')}
           style={styles.imageBackground}
           imageStyle={styles.imageStyle}
+          accessibilityLabel="Imagen de fondo de Linux"
         >
           <View style={styles.overlay} />
-          <Text style={styles.title}>Arquitectura y Desempeño en Linux</Text>
+          <Text style={styles.title} accessibilityRole="header">
+            {resaltarPalabra('Arquitectura y Desempeño en Linux')}
+          </Text>
         </ImageBackground>
       </View>
 
-      {/*  Sección 1: Tarjetas Animadas */}
-      <View style={styles.card}>
-        <TouchableOpacity onPress={toggleExpand} style={styles.cardTouchable}>
-          {/*  Mostrar la imagen solo si NO está expandido */}
+      {/* Sección 1: ¿Qué es Linux? */}
+      <View style={styles.card} ref={refs.sistema}>
+        <TouchableOpacity 
+          onPress={toggleExpand}
+          style={styles.cardTouchable}
+          accessible
+          accessibilityLabel={expanded ? "Contraer información sobre Linux" : "Expandir información sobre Linux"}
+          accessibilityRole="button"
+        >
           {!expanded && (
             <Image
-              source={require('../../assets/t2.png')} // Ruta correcta
+              source={require('../../assets/t2.png')}
               style={styles.cardImage}
+              accessibilityLabel="Icono de Linux"
             />
           )}
           <View style={styles.cardContent}>
-            <Text style={styles.cardTitle}>¿Qué es Linux?</Text>
-            {/*  Mostrar el texto solo si está expandido */}
+            <Text style={styles.cardTitle}>
+              {resaltarPalabra('¿Qué es Linux?')}
+            </Text>
             {expanded && (
               <Text style={styles.cardDescription}>
-                Linux es un sistema operativo de código abierto basado en el sistema Unix, desarrollado inicialmente por Linus Torvalds en 1991. A diferencia de los sistemas operativos propietarios como Windows o macOS, Linux es distribuido bajo la Licencia Pública General de GNU (GPL), lo que significa que cualquier persona puede utilizarlo, modificarlo y distribuirlo libremente.
-
-El núcleo de Linux, conocido como Kernel, es el encargado de gestionar los recursos del hardware del sistema, como la memoria, el procesador y los dispositivos de entrada y salida. Este núcleo proporciona una base sólida sobre la que se ejecutan aplicaciones y servicios, permitiendo a los usuarios interactuar con el sistema a través de una interfaz gráfica o mediante una interfaz de línea de comandos.
-
-A lo largo de los años, Linux ha evolucionado y ha dado lugar a una gran variedad de distribuciones (o distros), que son versiones del sistema adaptadas para diferentes necesidades y entornos. Estas distribuciones combinan el kernel de Linux con herramientas y aplicaciones que facilitan su uso y administración. Algunas de las distribuciones más conocidas incluyen Ubuntu, Debian, Fedora, CentOS y Arch Linux.
-
-Linux se utiliza ampliamente en entornos empresariales, servidores web, sistemas embebidos y dispositivos móviles debido a su robustez, seguridad y flexibilidad. De hecho, una gran parte de la infraestructura de Internet, incluyendo servidores de grandes compañías como Google, Facebook y Amazon, funciona sobre sistemas Linux.
-
-Una de las principales razones del éxito de Linux es su modelo colaborativo de desarrollo. Miles de programadores de todo el mundo contribuyen al código del sistema, mejorando constantemente su rendimiento, seguridad y funcionalidad. Esto ha permitido que Linux se adapte a una amplia variedad de plataformas y arquitecturas de hardware, desde computadoras personales hasta supercomputadoras y dispositivos móviles.
-
-En el ámbito de los dispositivos móviles, Android, el sistema operativo más utilizado en el mundo, está basado en el kernel de Linux. Esto significa que millones de dispositivos móviles utilizan una versión modificada de Linux para gestionar sus recursos y ejecutar aplicaciones.
-
-Linux también es muy valorado en entornos académicos y de investigación, donde su capacidad para personalizar el sistema operativo y adaptarlo a proyectos específicos lo convierte en una herramienta ideal para la experimentación y el desarrollo de nuevas tecnologías.
+                {resaltarPalabra(
+                  'Linux es un sistema operativo de código abierto basado en el sistema Unix, desarrollado inicialmente por Linus Torvalds en 1991. A diferencia de los sistemas operativos propietarios como Windows o macOS, Linux es distribuido bajo la Licencia Pública General de GNU (GPL), lo que significa que cualquier persona puede utilizarlo, modificarlo y distribuirlo libremente.'
+                )}
               </Text>
             )}
           </View>
         </TouchableOpacity>
       </View>
 
-
-
-      {/*  Sección 2: Sección Visual Dividida */}
-      <View style={styles.splitSection}>
+      {/* Sección 2: El Kernel */}
+      <View style={styles.splitSection} ref={refs.kernel}>
         <View style={styles.splitLeft}>
-          <Image source={require('../../assets/tema1.png')} style={styles.splitImage} />
+          <Image 
+            source={require('../../assets/tema1.png')} 
+            style={styles.splitImage} 
+            accessibilityLabel="Diagrama del kernel de Linux"
+          />
         </View>
         <View style={styles.splitRight}>
-          <Text style={styles.splitTitle}>El Kernel</Text>
-          <Text style={styles.splitDescription}>Corazón del sistema operativo Linux.</Text>
+          <Text style={styles.splitTitle}>
+            {resaltarPalabra('El Kernel')}
+          </Text>
+          <Text style={styles.splitDescription}>
+            {resaltarPalabra('Corazón del sistema operativo Linux. Gestiona los recursos del sistema, proporciona una interfaz para la comunicación entre hardware y software, y asegura el funcionamiento eficiente de todo el sistema.')}
+          </Text>
         </View>
       </View>
 
-      {/*  Sección 3: Tarjeta de Estilo Diferente */}
-      <View style={styles.highlightCard}>
-        <Text style={styles.highlightTitle}>⚡️ Desempeño en Linux</Text>
+      {/* Sección 3: Desempeño en Linux */}
+      <View style={styles.highlightCard} ref={refs.procesos}>
+        <Text style={styles.highlightTitle}>
+          {resaltarPalabra('⚡️ Desempeño en Linux')}
+        </Text>
         <Text style={styles.highlightText}>
-          El manejo de procesos y memoria garantiza velocidad y estabilidad.
+          {resaltarPalabra('El manejo de procesos y memoria en Linux garantiza velocidad y estabilidad. Su diseño modular permite un uso eficiente de recursos, incluso en hardware limitado. La planificación de procesos y el manejo de memoria virtual son clave en su excelente desempeño.')}
         </Text>
       </View>
 
-      {/*  Sección 4: Galería de Distribuciones */}
-      {/*  Sección de Distribuciones */}
-      <View style={styles.galleryContainer}>
-    <Text style={styles.sectionTitle}> Tipos de Distribuciones de Linux</Text>
-
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.galleryScroll}>
-        {/* Tarjeta 1: Ubuntu */}
-        <TouchableOpacity style={styles.galleryCard}>
-        <Image source={require('../../assets/t7.png')} style={styles.galleryImage} />
-        <Text style={styles.galleryTitle}>Ubuntu</Text>
+      {/* Sección 4: Distribuciones de Linux */}
+      <View style={styles.galleryContainer} ref={refs.distribuciones}>
+        <Text style={styles.sectionTitle}>
+          {resaltarPalabra('Tipos de Distribuciones de Linux')}
+        </Text>
         
-        {/* Scroll interno para descripción larga */}
-        <ScrollView style={styles.descriptionScroll} nestedScrollEnabled={true}>
-            <Text style={styles.galleryDescription}>
-            Ubuntu es una distribución de Linux basada en Debian, desarrollada y mantenida por Canonical Ltd., una empresa británica fundada por Mark Shuttleworth en 2004. Ubuntu es uno de los sistemas operativos basados en Linux más populares del mundo, conocido por su simplicidad, facilidad de uso y enfoque en la accesibilidad para usuarios nuevos y experimentados.
+        <FlatList
+          horizontal
+          data={distributions}
+          renderItem={({ item }) => (
+            <DistributionCard 
+              name={item.name}
+              image={item.image}
+              description={item.description}
+              resaltarPalabra={resaltarPalabra}
+            />
+          )}
+          keyExtractor={item => item.id.toString()}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.galleryScroll}
+          accessibilityLabel="Galería de distribuciones de Linux"
+        />
+      </View>
 
-            El objetivo principal de Ubuntu es ofrecer un sistema operativo gratuito, de código abierto y fácil de utilizar para cualquier persona, independientemente de su nivel de experiencia técnica. A diferencia de otras distribuciones de Linux más orientadas a usuarios avanzados, Ubuntu está diseñado para ser intuitivo y accesible, proporcionando una interfaz gráfica amigable y una amplia variedad de aplicaciones preinstaladas que permiten realizar tareas cotidianas sin complicaciones.
-
-            Ubuntu utiliza el entorno de escritorio GNOME como su interfaz predeterminada, aunque también ofrece variantes con otros entornos como Kubuntu (con KDE Plasma), Xubuntu (con XFCE) y Lubuntu (con LXQt), adaptándose así a diferentes preferencias y necesidades de los usuarios.
-            </Text>
-        </ScrollView>
-        </TouchableOpacity>
-
-        {/* Tarjeta 2: CentOS */}
-        <TouchableOpacity style={styles.galleryCard}>
-        <Image source={require('../../assets/t8.png')} style={styles.galleryImage} />
-        <Text style={styles.galleryTitle}>CentOS</Text>
-
-        {/* Scroll interno para descripción */}
-        <ScrollView style={styles.descriptionScroll} nestedScrollEnabled={true}>
-            <Text style={styles.galleryDescription}>
-            Estable para entornos empresariales y servidores.
-            </Text>
-        </ScrollView>
-        </TouchableOpacity>
-
-        {/* Tarjeta 3: Kali Linux */}
-        <TouchableOpacity style={styles.galleryCard}>
-        <Image source={require('../../assets/t9.png')} style={styles.galleryImage} />
-        <Text style={styles.galleryTitle}>Kali Linux</Text>
-
-        {/* Scroll interno para descripción */}
-        <ScrollView style={styles.descriptionScroll} nestedScrollEnabled={true}>
-            <Text style={styles.galleryDescription}>
-            Enfocada en pentesting y análisis de seguridad.
-            </Text>
-        </ScrollView>
-        </TouchableOpacity>
-
-        {/* Tarjeta 4: Raspbian */}
-        <TouchableOpacity style={styles.galleryCard}>
-        <Image source={require('../../assets/t10.png')} style={styles.galleryImage} />
-        <Text style={styles.galleryTitle}>Raspbian</Text>
-
-        {/* Scroll interno para descripción */}
-        <ScrollView style={styles.descriptionScroll} nestedScrollEnabled={true}>
-            <Text style={styles.galleryDescription}>
-            Sistema para dispositivos Raspberry Pi.
-            </Text>
-        </ScrollView>
-        </TouchableOpacity>
-    </ScrollView>
-    </View>
-
-
-
-      {/*  Pie de Página Dinámico */}
+      {/* Pie de página */}
       <View style={styles.footerContainer}>
-        <Text style={styles.footerText}>🚀 Prepárate para explorar más sobre Linux.</Text>
+        <Text style={styles.footerText}>
+          {resaltarPalabra('Prepárate para explorar más sobre Linux.')}
+        </Text>
       </View>
     </ScrollView>
   );
 };
 
-//  Estilos para Diseño Avanzado
+// Estilos
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
-    backgroundColor: '#1E1E1E',
+    backgroundColor: COLORS.primary,
+    paddingBottom: 20,
   },
   headerContainer: {
-    height: 250, // Altura de la imagen superior
+    height: 250,
   },
   imageBackground: {
     flex: 1,
@@ -180,29 +253,34 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Superposición oscura
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#FFD700',
+    color: COLORS.accent,
     textAlign: 'center',
     paddingHorizontal: 20,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
   },
-  sectionTitle: {
-    fontSize: 20,
+  highlightedText: {
+    textDecorationLine: 'underline',
     fontWeight: 'bold',
-    color: '#FFD700',
-    marginVertical: 20,
-    marginLeft: 10,
+    color: COLORS.accent,
   },
   card: {
-    backgroundColor: '#2E2E2E',
+    backgroundColor: COLORS.secondary,
     marginHorizontal: 20,
     borderRadius: 12,
-    padding: 12,
-    margin: 20,
+    padding: 15,
+    marginVertical: 10,
     elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
   },
   cardTouchable: {
     flexDirection: 'row',
@@ -211,7 +289,7 @@ const styles = StyleSheet.create({
   cardImage: {
     width: 60,
     height: 60,
-    marginRight: 12,
+    marginRight: 15,
     borderRadius: 8,
   },
   cardContent: {
@@ -220,109 +298,128 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#FFD700',
+    color: COLORS.accent,
+    marginBottom: 5,
   },
   cardDescription: {
     fontSize: 14,
-    color: '#fff',
-    marginTop: 5,
-    textAlign: 'justify',
+    color: COLORS.text,
+    lineHeight: 20,
   },
-  
   splitSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#2E2E2E',
-    borderRadius: 10,
+    backgroundColor: COLORS.secondary,
+    borderRadius: 12,
     marginHorizontal: 20,
-    padding: 10,
-    marginBottom: 20,
+    padding: 15,
+    marginVertical: 10,
   },
   splitLeft: {
     flex: 1,
+    alignItems: 'center',
   },
   splitRight: {
-    flex: 1,
-    paddingLeft: 10,
+    flex: 2,
+    paddingLeft: 15,
   },
   splitImage: {
-    width: 80,
-    height: 80,
+    width: 100,
+    height: 100,
     resizeMode: 'contain',
   },
   splitTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#FFD700',
+    color: COLORS.accent,
+    marginBottom: 8,
   },
   splitDescription: {
     fontSize: 14,
-    color: '#fff',
+    color: COLORS.text,
+    lineHeight: 20,
   },
   highlightCard: {
-    backgroundColor: '#FFD700',
+    backgroundColor: COLORS.accent,
     borderRadius: 12,
     padding: 20,
     marginHorizontal: 20,
-    marginBottom: 20,
+    marginVertical: 10,
   },
   highlightTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 8,
+    color: COLORS.darkText,
   },
   highlightText: {
     fontSize: 14,
-    color: '#333',
+    color: COLORS.darkText,
+    lineHeight: 20,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: COLORS.accent,
+    marginLeft: 20,
+    marginTop: 20,
+    marginBottom: 15,
   },
   galleryContainer: {
     marginBottom: 20,
   },
   galleryScroll: {
-    marginHorizontal: 10,
+    paddingHorizontal: 10,
   },
   galleryCard: {
-    backgroundColor: '#2E2E2E',
+    backgroundColor: COLORS.secondary,
     width: 200,
     height: 300,
-    padding: 10,
-    borderRadius: 10,
-    marginRight: 10,
+    padding: 15,
+    borderRadius: 12,
+    marginRight: 15,
     alignItems: 'center',
+    elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   galleryImage: {
-    width: '80%',
-    height: '40%',
-    margin: 22,
-    borderRadius: 15,
+    width: 120,
+    height: 120,
+    borderRadius: 10,
+    marginBottom: 15,
   },
   galleryTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#FFD700',
-    marginBottom: 4,
+    color: COLORS.accent,
+    marginBottom: 10,
+    textAlign: 'center',
   },
   galleryDescription: {
     fontSize: 12,
-    color: '#fff',
+    color: COLORS.text,
     textAlign: 'center',
+    lineHeight: 18,
   },
-  
+  descriptionScroll: {
+    maxHeight: 100,
+    width: '100%',
+  },
   footerContainer: {
-    backgroundColor: '#FFD700',
-    paddingVertical: 12,
+    backgroundColor: COLORS.accent,
+    paddingVertical: 15,
     marginTop: 20,
+    marginHorizontal: 20,
+    borderRadius: 10,
   },
   footerText: {
     textAlign: 'center',
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
+    color: COLORS.darkText,
   },
 });
 
