@@ -169,7 +169,7 @@ const TemaAlmacenaje = () => {
         >
           <View style={styles.cardHeader}>
             <View style={styles.iconContainer}>
-              <Image source={require('../../assets/t7.png')} style={styles.cardIcon} /> {/* Icono de carpeta */}
+              <Image source={require('../../assets/a2.png')} style={styles.cardIcon} /> {/* Icono de carpeta */}
             </View>
             <Text style={styles.cardTitle}>Jerarquía del Sistema de Archivos</Text>
             <Animated.View style={{ transform: [{ rotate: rotateInterpolate(rotateAnims.jerarquia) }] }}>
@@ -227,7 +227,7 @@ const TemaAlmacenaje = () => {
         >
           <View style={styles.cardHeader}>
             <View style={styles.iconContainer}>
-              <Image source={require('../../assets/t8.png')} style={styles.cardIcon} /> {/* Icono de memoria */}
+              <Image source={require('../../assets/a3.png')} style={styles.cardIcon} /> {/* Icono de memoria */}
             </View>
             <Text style={styles.cardTitle}>Gestión de Memoria en Linux</Text>
             <Animated.View style={{ transform: [{ rotate: rotateInterpolate(rotateAnims.memoria) }] }}>
@@ -286,7 +286,7 @@ const TemaAlmacenaje = () => {
         >
           <View style={styles.cardHeader}>
             <View style={styles.iconContainer}>
-              <Image source={require('../../assets/t9.png')} style={styles.cardIcon} /> {/* Icono de disco */}
+              <Image source={require('../../assets/a4.png')} style={styles.cardIcon} /> {/* Icono de disco */}
             </View>
             <Text style={styles.cardTitle}>Gestión de Discos y Particiones</Text>
             <Animated.View style={{ transform: [{ rotate: rotateInterpolate(rotateAnims.discos) }] }}>
@@ -357,7 +357,7 @@ const TemaAlmacenaje = () => {
         >
           <View style={styles.cardHeader}>
             <View style={styles.iconContainer}>
-              <Image source={require('../../assets/t10.png')} style={styles.cardIcon} /> {/* Icono de herramientas */}
+              <Image source={require('../../assets/a5.png')} style={styles.cardIcon} /> {/* Icono de herramientas */}
             </View>
             <Text style={styles.cardTitle}>Herramientas de Monitoreo</Text>
             <Animated.View style={{ transform: [{ rotate: rotateInterpolate(rotateAnims.herramientas) }] }}>

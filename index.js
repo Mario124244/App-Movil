@@ -11,6 +11,7 @@ import Tema1Screen from './screens/Principal/tema1';
 import Tema4Screen from './screens/Principal/tema4';
 import Tema3Screen from './screens/Principal/tema3';
 import BuscarScreen from './screens/Principal/Buscar';
+import PortadaScreen from './screens/Principal/portada';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -69,6 +70,8 @@ function MainTabs() {
             iconName = focused ? 'search' : 'search-outline';
           } else if (route.name === 'Ajustes') {
             iconName = focused ? 'settings' : 'settings-outline';
+          } else if (route.name === 'Portada') {
+            iconName = focused ? 'book' : 'book-outline';
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -77,6 +80,7 @@ function MainTabs() {
     >
       <Tab.Screen name="Inicio" component={LearningStack} />
       <Tab.Screen name="Buscar" component={BuscarStack} />
+      <Tab.Screen name="Portada" component={PortadaScreen} />
       <Tab.Screen name="Ajustes" component={AjustesStack} />
     </Tab.Navigator>
   );
