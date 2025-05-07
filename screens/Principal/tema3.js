@@ -444,7 +444,7 @@ const TemaAlmacenaje = () => {
           </Text>
           <View style={styles.footerDivider} />
           <Text style={styles.footerText}>
-            © {new Date().getFullYear()} Linux Storage Guide | v1.0
+            © {new Date().getFullYear()} Equipo 4 | 2025
           </Text>
         </View>
       </ScrollView>

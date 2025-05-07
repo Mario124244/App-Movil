@@ -25,28 +25,29 @@ const TeamCoverScreen = () => {
     {
       id: 1,
       name: 'Jesus Mario Bazaldua Bustos',
-      role: 'Líder de Proyecto',
-      bio: 'Especialista en arquitectura de sistemas con 8 años de experiencia en desarrollo distribuido',
-      image: require('../../assets/t7.png'),
+      role: 'Ingenieria en Tecnologia de Software',
+      bio: 'Estudiante de Ingenieria en Tecnologia de Software, apasionado por la programacion y el desarrollo de software',
+      image: require('../../assets/a8.jpg'),
       skills: ['2014834', '009', 'SISTEMAS OPERATIVOS'],
       social: {
-        github: 'https://github.com/ana',
+        github: 'https://www.linkedin.com/in/jmbb2004/',
         linkedin: 'https://linkedin.com/in/ana'
       }
     },
     {
       id: 2,
-      name: 'Carlos Ruiz',
-      role: 'Desarrollador Senior',
-      bio: 'Experto en microservicios y sistemas escalables',
-      image: require('../../assets/t7.png'),
-      skills: ['Node.js', 'Python', 'React Native'],
+      name: 'Ricardo López reyna',
+      role: 'Ingenieria en Sistemas',
+      bio: '',
+      image: require('../../assets/a10.jpg'),
+      skills: ['1971559', '009', 'SISTEMAS OPERATIVOS'],
       social: {
         github: 'https://github.com/carlos',
         twitter: 'https://twitter.com/carlos'
       }
     },
-    // Agrega más miembros...
+    
+    
   ];
 
   const headerHeight = scrollY.interpolate({
@@ -116,23 +117,18 @@ const TeamCoverScreen = () => {
             <Text style={styles.aboutTitle}>Quiénes Somos</Text>
           </View>
           <Text style={styles.aboutText}>
-            Combinamos experiencia técnica y visión creativa para ofrecer soluciones innovadoras. 
-            Nuestro equipo multidisciplinario trabaja con tecnologías de vanguardia para superar 
-            los desafíos digitales más complejos.
+            Somos el equipo 4 de la materia de Sistemas Operativos, un grupo de estudiantes, este proyecto tiene como objetivo exponer los temas  y sus conceptos mas importantes acerca de el sistema operativo linux.
           </Text>
           <View style={styles.statsContainer}>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>15+</Text>
-              <Text style={styles.statLabel}>Años de Experiencia</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>50+</Text>
-              <Text style={styles.statLabel}>Proyectos Completados</Text>
-            </View>
+            
           </View>
         </View>
       </ScrollView>
 
+
+
+        
+        
       <Modal visible={!!selectedMember} animationType="slide">
         <View style={styles.modalContainer}>
           {selectedMember && (
@@ -201,15 +197,15 @@ const styles = StyleSheet.create({
   },
   headerBackground: {
     flex: 1,
-    justifyContent: 'center', // Centra verticalmente
-    alignItems: 'center', // Centra horizontalmente
+    justifyContent: 'center',
+    alignItems: 'center', 
   },
   headerOverlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.57)',
     width: '100%',
     height: '100%',
-    justifyContent: 'center', // Centra verticalmente
-    alignItems: 'center', // Centra horizontalmente
+    justifyContent: 'center',
+    alignItems: 'center', 
   },
   teamTitle: {
     fontSize: 36,

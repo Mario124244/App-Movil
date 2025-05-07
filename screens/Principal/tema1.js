@@ -13,36 +13,33 @@ import {
   UIManager
 } from 'react-native';
 
-
-
-// Datos de las distribuciones de Linux
+// Datos de las distribuciones de Linux con enfoque en arquitectura
 const distributions = [
   {
     id: 1,
     name: 'Ubuntu',
     image: require('../../assets/t7.png'),
-    description: 'Ubuntu es una distribución de Linux basada en Debian, desarrollada y mantenida por Canonical Ltd. Popular por su facilidad de uso y gran comunidad.'
+    description: 'Utiliza el kernel Linux con modificaciones para mejor compatibilidad. Emplea systemd como sistema de init, Snap para gestión de paquetes, y ofrece soporte para arquitecturas x86, ARM, y RISC-V.'
   },
   {
     id: 2,
     name: 'CentOS',
     image: require('../../assets/t8.png'),
-    description: 'Estable para entornos empresariales y servidores.'
+    description: 'Basado en Red Hat Enterprise Linux, usa el kernel Linux con parches de estabilidad. Optimizado para servidores con soporte para SELinux, systemd, y gestión avanzada de paquetes RPM.'
   },
   {
     id: 3,
     name: 'Kali Linux',
     image: require('../../assets/t9.png'),
-    description: 'Enfocada en pentesting y análisis de seguridad.'
+    description: 'Incluye kernel Linux con parches para pentesting, soporte para inyección de paquetes 802.11, y herramientas compiladas con opciones de seguridad como PIE y RELRO.'
   },
   {
     id: 4,
-    name: 'Raspbian',
+    name: 'Arch Linux',
     image: require('../../assets/t10.png'),
-    description: 'Sistema para dispositivos Raspberry Pi.'
+    description: 'Sistema rolling-release con kernel vanilla Linux, optimizado para rendimiento. Usa pacman para gestión de paquetes y systemd para gestión de servicios.'
   }
 ];
-
 
 const COLORS = {
   primary: '#1E1E1E',
@@ -52,6 +49,13 @@ const COLORS = {
   darkText: '#333333',
 };
 
+const PerformanceMetric = ({ title, value, description }) => (
+  <View style={styles.metricContainer}>
+    <Text style={styles.metricTitle}>{title}</Text>
+    <Text style={styles.metricValue}>{value}</Text>
+    <Text style={styles.metricDescription}>{description}</Text>
+  </View>
+);
 
 const DistributionCard = ({ name, image, description, resaltarPalabra }) => (
   <TouchableOpacity style={styles.galleryCard}>
@@ -74,6 +78,8 @@ const Tema1Screen = ({ route }) => {
     sistema: useRef(null),
     kernel: useRef(null),
     procesos: useRef(null),
+    memoria: useRef(null),
+    filesystem: useRef(null),
     distribuciones: useRef(null),
   };
 
@@ -94,13 +100,11 @@ const Tema1Screen = ({ route }) => {
     }
   }, [palabraBuscada]);
 
-  // Función para expandir/contraer con animación
   const toggleExpand = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpanded(!expanded);
   };
 
-  // Función memoizada para resaltar texto
   const resaltarPalabra = useCallback((texto) => {
     if (!palabraBuscada) return texto;
 
@@ -122,7 +126,7 @@ const Tema1Screen = ({ route }) => {
     <ScrollView 
       ref={scrollViewRef} 
       contentContainerStyle={styles.scrollContainer}
-      accessibilityLabel="Pantalla de información sobre Linux"
+      accessibilityLabel="Pantalla de información sobre arquitectura y desempeño de Linux"
     >
       {/* Encabezado */}
       <View style={styles.headerContainer}>
@@ -139,13 +143,13 @@ const Tema1Screen = ({ route }) => {
         </ImageBackground>
       </View>
 
-      {/* Sección 1: ¿Qué es Linux? */}
+      {/* Sección 1: Arquitectura de Linux */}
       <View style={styles.card} ref={refs.sistema}>
         <TouchableOpacity 
           onPress={toggleExpand}
           style={styles.cardTouchable}
           accessible
-          accessibilityLabel={expanded ? "Contraer información sobre Linux" : "Expandir información sobre Linux"}
+          accessibilityLabel={expanded ? "Contraer información sobre arquitectura de Linux" : "Expandir información sobre arquitectura de Linux"}
           accessibilityRole="button"
         >
           {!expanded && (
@@ -157,14 +161,25 @@ const Tema1Screen = ({ route }) => {
           )}
           <View style={styles.cardContent}>
             <Text style={styles.cardTitle}>
-              {resaltarPalabra('¿Qué es Linux?')}
+              {resaltarPalabra('Arquitectura de Linux')}
             </Text>
             {expanded && (
-              <Text style={styles.cardDescription}>
-                {resaltarPalabra(
-                  'Linux es un sistema operativo de código abierto basado en el sistema Unix, desarrollado inicialmente por Linus Torvalds en 1991. A diferencia de los sistemas operativos propietarios como Windows o macOS, Linux es distribuido bajo la Licencia Pública General de GNU (GPL), lo que significa que cualquier persona puede utilizarlo, modificarlo y distribuirlo libremente.'
-                )}
-              </Text>
+              <View>
+                <Text style={styles.cardDescription}>
+                  {resaltarPalabra(
+                    'Linux sigue una arquitectura modular basada en el diseño monolítico del kernel, donde todos los subsistemas principales (gestión de procesos, memoria, sistemas de archivos, red, etc.) se ejecutan en espacio de kernel con privilegios elevados. Sin embargo, utiliza módulos cargables dinámicamente (LKM - Loadable Kernel Modules) para extender funcionalidad sin necesidad de recompilar el kernel.'
+                  )}
+                </Text>
+                <Text style={styles.cardDescription}>
+                  {resaltarPalabra(
+                    'La arquitectura se divide en:'
+                  )}
+                </Text>
+                <Text style={styles.listItem}>• <Text style={styles.bold}>Espacio de usuario</Text>: Aplicaciones y bibliotecas (GNU C library, etc.)</Text>
+                <Text style={styles.listItem}>• <Text style={styles.bold}>System Call Interface</Text>: Interfaz entre espacio usuario y kernel (≈300 syscalls en x86)</Text>
+                <Text style={styles.listItem}>• <Text style={styles.bold}>Kernel</Text>: Subsistemas principales (planificador, gestión de memoria, VFS, etc.)</Text>
+                <Text style={styles.listItem}>• <Text style={styles.bold}>Controladores de dispositivo</Text>: Interfaz con hardware</Text>
+              </View>
             )}
           </View>
         </TouchableOpacity>
@@ -181,28 +196,116 @@ const Tema1Screen = ({ route }) => {
         </View>
         <View style={styles.splitRight}>
           <Text style={styles.splitTitle}>
-            {resaltarPalabra('El Kernel')}
+            {resaltarPalabra('El Kernel Linux')}
           </Text>
           <Text style={styles.splitDescription}>
-            {resaltarPalabra('Corazón del sistema operativo Linux. Gestiona los recursos del sistema, proporciona una interfaz para la comunicación entre hardware y software, y asegura el funcionamiento eficiente de todo el sistema.')}
+            {resaltarPalabra('El kernel Linux (actualmente en la serie 6.x) implementa características avanzadas:')}
           </Text>
+          <Text style={styles.listItem}>• <Text style={styles.bold}>Planificador CFS</Text>: Completely Fair Scheduler desde 2.6.23 (time slices basados en pesos)</Text>
+          <Text style={styles.listItem}>• <Text style={styles.bold}>O(1) scheduler</Text>: Tiempo constante para planificación</Text>
+          <Text style={styles.listItem}>• <Text style={styles.bold}>Namespaces y cgroups</Text>: Aislamiento de procesos (base para contenedores)</Text>
+          <Text style={styles.listItem}>• <Text style={styles.bold}>Kernel preemptivo</Text>: Mejor latencia para aplicaciones en tiempo real</Text>
+          <Text style={styles.listItem}>• <Text style={styles.bold}>eBPF</Text>: Mecanismo para ejecución segura de bytecode en el kernel</Text>
         </View>
       </View>
 
-      {/* Sección 3: Desempeño en Linux */}
-      <View style={styles.highlightCard} ref={refs.procesos}>
+      {/* Sección 3: Gestión de Memoria */}
+      <View style={styles.highlightCard} ref={refs.memoria}>
         <Text style={styles.highlightTitle}>
-          {resaltarPalabra('⚡️ Desempeño en Linux')}
+          {resaltarPalabra('🧠 Gestión de Memoria')}
         </Text>
         <Text style={styles.highlightText}>
-          {resaltarPalabra('El manejo de procesos y memoria en Linux garantiza velocidad y estabilidad. Su diseño modular permite un uso eficiente de recursos, incluso en hardware limitado. La planificación de procesos y el manejo de memoria virtual son clave en su excelente desempeño.')}
+          {resaltarPalabra('Linux implementa un sistema de memoria virtual sofisticado:')}
         </Text>
+        <Text style={styles.listItem}>• <Text style={styles.bold}>Paginación</Text>: Tamaño de página típico de 4KB (2MB/1GB para huellas grandes)</Text>
+        <Text style={styles.listItem}>• <Text style={styles.bold}>Swap</Text>: Área de intercambio con políticas LRU mejorado</Text>
+        <Text style={styles.listItem}>• <Text style={styles.bold}>Overcommit</Text>: Asignación de memoria más allá de la física disponible</Text>
+        <Text style={styles.listItem}>• <Text style={styles.bold}>HugeTLB</Text>: Soporte para páginas de memoria grandes (mejor rendimiento)</Text>
+        <Text style={styles.listItem}>• <Text style={styles.bold}>OOM Killer</Text>: Termina procesos cuando la memoria se agota</Text>
       </View>
 
-      {/* Sección 4: Distribuciones de Linux */}
+      {/* Sección 4: Sistemas de Archivos */}
+      <View style={styles.card} ref={refs.filesystem}>
+        <Text style={styles.cardTitle}>
+          {resaltarPalabra('📂 Sistemas de Archivos')}
+        </Text>
+        <Text style={styles.cardDescription}>
+          {resaltarPalabra('Linux soporta múltiples sistemas de archivos a través de su capa VFS (Virtual File System):')}
+        </Text>
+        <View style={styles.metricsRow}>
+          <PerformanceMetric 
+            title="Ext4" 
+            value="~500K IOPS" 
+            description="Journaling, asignación retardada, sistema por defecto en muchas distros" 
+          />
+          <PerformanceMetric 
+            title="XFS" 
+            value="~1M IOPS" 
+            description="Alto rendimiento para grandes archivos, escalabilidad" 
+          />
+        </View>
+        <View style={styles.metricsRow}>
+          <PerformanceMetric 
+            title="Btrfs" 
+            value="~300K IOPS" 
+            description="Copy-on-write, snapshots, compresión integrada" 
+          />
+          <PerformanceMetric 
+            title="ZFS" 
+            value="~700K IOPS" 
+            description="Pool de almacenamiento, checksumming, compresión" 
+          />
+        </View>
+      </View>
+
+      {/* Sección 5: Desempeño */}
+      <View style={styles.highlightCard} ref={refs.procesos}>
+        <Text style={styles.highlightTitle}>
+          {resaltarPalabra('⚡️ Métricas de Desempeño')}
+        </Text>
+        <Text style={styles.highlightText}>
+          {resaltarPalabra('Linux sobresale en benchmarks de desempeño:')}
+        </Text>
+        <View style={styles.metricsRow}>
+          <PerformanceMetric 
+            title="Latencia syscall" 
+            value="<100ns" 
+            description="Llamadas al kernel mínimas" 
+          />
+          <PerformanceMetric 
+            title="Context Switch" 
+            value="~1μs" 
+            description="Cambio rápido entre procesos" 
+          />
+        </View>
+        <View style={styles.metricsRow}>
+          <PerformanceMetric 
+            title="Throughput red" 
+            value="100Gbps+" 
+            description="Con NICs modernas y tuning" 
+          />
+          <PerformanceMetric 
+            title="IOPS disco" 
+            value="Millones" 
+            description="Con NVMe y sistemas optimizados" 
+          />
+        </View>
+        <Text style={styles.highlightText}>
+          {resaltarPalabra('Factores clave del desempeño:')}
+        </Text>
+        <Text style={styles.listItem}>• <Text style={styles.bold}>CFS</Text>: Planificador justo para cargas mixtas</Text>
+        <Text style={styles.listItem}>• <Text style={styles.bold}>I/O Schedulers</Text>: Kyber, BFQ, mq-deadline para diferentes cargas</Text>
+        <Text style={styles.listItem}>• <Text style={styles.bold}>TCP/IP Stack</Text>: Alto rendimiento con soporte para aceleración hardware</Text>
+        <Text style={styles.listItem}>• <Text style={styles.bold}>RCU</Text>: Read-Copy-Update para sincronización escalable</Text>
+      </View>
+
+      {/* Sección 6: Distribuciones de Linux */}
       <View style={styles.galleryContainer} ref={refs.distribuciones}>
         <Text style={styles.sectionTitle}>
-          {resaltarPalabra('Tipos de Distribuciones de Linux')}
+          {resaltarPalabra('Distribuciones y su Arquitectura')}
+        </Text>
+        <Text style={styles.sectionSubtitle}>
+          Comparación de enfoques arquitectónicos en distribuciones populares
         </Text>
         
         <FlatList
@@ -226,15 +329,15 @@ const Tema1Screen = ({ route }) => {
       {/* Pie de página */}
       <View style={styles.footerContainer}>
         <Text style={styles.footerText}>
-          {resaltarPalabra('Prepárate para explorar más sobre Linux.')}
+          {resaltarPalabra('Linux continúa evolucionando con mejoras en: rendimiento (io_uring, DAMON), seguridad (Landlock, Kernel Lockdown), y soporte hardware (ARM, RISC-V).')}
         </Text>
       </View>
     </ScrollView>
   );
 };
-
 // Estilos
 const styles = StyleSheet.create({
+  // Estilos existentes
   scrollContainer: {
     flexGrow: 1,
     backgroundColor: COLORS.primary,
@@ -345,6 +448,11 @@ const styles = StyleSheet.create({
     padding: 20,
     marginHorizontal: 20,
     marginVertical: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   highlightTitle: {
     fontSize: 18,
@@ -421,6 +529,77 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.darkText,
   },
+
+  // Nuevos estilos añadidos
+  bold: {
+    fontWeight: 'bold',
+    color: COLORS.accent
+  },
+  listItem: {
+    color: COLORS.text,
+    marginBottom: 8,
+    lineHeight: 22,
+    fontSize: 14,
+    paddingLeft: 10, // Espaciado adicional para alineación
+  },
+  metricContainer: {
+    backgroundColor: COLORS.secondary,
+    padding: 15,
+    borderRadius: 8,
+    margin: 5,
+    flex: 1,
+    minWidth: 150,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+  },
+  metricTitle: {
+    color: COLORS.accent,
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 5
+  },
+  metricValue: {
+    color: COLORS.text,
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 5
+  },
+  metricDescription: {
+    color: COLORS.text,
+    fontSize: 12,
+    lineHeight: 16
+  },
+  metricsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 5,
+    paddingHorizontal: 10
+  },
+  sectionSubtitle: {
+    color: COLORS.text,
+    fontSize: 14,
+    marginBottom: 15,
+    textAlign: 'center',
+    opacity: 0.8,
+    paddingHorizontal: 20
+  },
+  // Estilo adicional para mejorar la legibilidad de las listas
+  listContainer: {
+    marginTop: 10,
+    marginBottom: 5,
+    paddingLeft: 15
+  },
+  // Estilo para código técnico
+  codeText: {
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    backgroundColor: 'rgba(0,0,0,0.1)',
+    padding: 3,
+    borderRadius: 3,
+    color: COLORS.text
+  }
 });
 
 export default Tema1Screen;

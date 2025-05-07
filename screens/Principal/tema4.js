@@ -34,6 +34,7 @@ const Tema4Screen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTech, setSelectedTech] = useState(null);
   const [expandedSecurity, setExpandedSecurity] = useState(false);
+  const [selectedCommand, setSelectedCommand] = useState(null);
 
   
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -182,8 +183,8 @@ const Tema4Screen = () => {
           imageStyle={styles.headerImageStyle}
         >
           <View style={styles.headerOverlay}>
-            <Text style={styles.headerTitle}>Exploración Avanzada</Text>
-            <Text style={styles.headerSubtitle}>Tecnologías distribuidas y más</Text>
+            <Text style={styles.headerTitle}>Redes y Seguridad:</Text>
+            <Text style={styles.headerSubtitle}>Sistemas Distribuidos</Text>
           </View>
         </ImageBackground>
       </Animated.View>
@@ -206,7 +207,7 @@ const Tema4Screen = () => {
         >
           <View style={styles.cardHeader}>
             <View style={styles.iconContainer}>
-              <Image source={require('../../assets/t2.png')} style={styles.cardIcon} />
+              <Image source={require('../../assets/a11.jpg')} style={styles.cardIcon} />
             </View>
             <Text style={styles.cardTitle}>Multitarea en Linux</Text>
             <Animated.View style={{ transform: [{ rotate: rotateInterpolate }] }}>
@@ -247,7 +248,7 @@ const Tema4Screen = () => {
 >
   <View style={styles.cardHeader}>
     <View style={styles.iconContainer}>
-      <Image source={require('../../assets/t2.png')} style={styles.cardIcon} />
+      <Image source={require('../../assets/a12.jpg')} style={styles.cardIcon} />
     </View>
     <Text style={styles.cardTitle}>Amenazas, Intrusos y Herramientas</Text>
     <Animated.View style={{ transform: [{ rotate: expandedSecurity ? '180deg' : '0deg' }] }}>
@@ -301,7 +302,7 @@ const Tema4Screen = () => {
 
         <View style={[styles.splitSection, styles.elevatedCard]}>
           <View style={styles.splitImageContainer}>
-            <Image source={require('../../assets/tema1.png')} style={styles.splitImage} />
+            <Image source={require('../../assets/a13.jpg')} style={styles.splitImage} />
           </View>
           <View style={styles.splitContent}>
             <View style={styles.sectionTag}>
@@ -463,6 +464,45 @@ const Tema4Screen = () => {
           </View>
         )}
       </Modal>
+
+      {/* Modal de detalle de comando */}
+      {selectedCommand && (
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Comando: {selectedCommand.command}</Text>
+              <TouchableOpacity 
+                style={styles.closeButton}
+                onPress={() => setSelectedCommand(null)}
+              >
+                <Text style={styles.closeButtonText}>×</Text>
+              </TouchableOpacity>
+            </View>
+            
+            <ScrollView style={styles.modalContent}>
+              <Text style={styles.modalDescription}>{selectedCommand.description}</Text>
+              
+              <Text style={styles.modalSectionTitle}>Ejemplo de uso:</Text>
+              <View style={styles.modalCodeBlock}>
+                <Text style={styles.modalCodeText}>$ {selectedCommand.command}</Text>
+                <Text style={styles.modalOutput}>[Salida del comando]</Text>
+              </View>
+              
+              <Text style={styles.modalSectionTitle}>Opciones comunes:</Text>
+              <View style={styles.modalOptions}>
+                <Text style={styles.modalOption}>-h: Mostrar ayuda</Text>
+                <Text style={styles.modalOption}>-v: Modo verbose</Text>
+                <Text style={styles.modalOption}>-a: Mostrar toda la información</Text>
+              </View>
+              
+              <TouchableOpacity 
+                style={styles.modalButton}
+                onPress={() => Linking.openURL(`https://man7.org/linux/man-pages/man1/${selectedCommand.command.split(' ')[0]}.1.html`)}
+              >
+                <Text style={styles.modalButtonText}>Ver Página del Manual</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        )}
     </View>
   );
 };
@@ -936,6 +976,19 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: '#fff',
     fontWeight: '500'
+  },
+  modalOutput: {
+    color: '#abb2bf',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    marginTop: 5
+  },
+  modalOptions: {
+    marginBottom: 20
+  },
+  modalOption: {
+    fontSize: 16,
+    color: '#444',
+    marginBottom: 5
   }
 });
 
